@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
-COPY *./video-editing-api.csproj ./
+COPY ./video-editing-api/*.csproj ./
 RUN dotnet restore
 
 # Copy everything else and build
