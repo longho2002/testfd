@@ -1,18 +1,19 @@
 # Define the build stage
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
-WORKDIR /src
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS base
+WORKDIR /app
 
-# Copy csproj and restore dependencies
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+WORKDIR /src
 COPY ./video-editing-api/*.csproj ./video-editing-api/
 RUN dotnet restore "video-editing-api/video-editing-api.csproj"
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "video-editing-api.csproj" -c Release -o /app/build
 
-# Copy all files and build
-COPY . ./video-editing-api/
-WORKDIR "/src/video-editing-api"
-RUN dotnet publish -c Release -o out
+FROM build AS publish
+RUN dotnet publish "video-editing-api.csproj" -c Release -o /app/publish
 
-# Define the runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
+FROM base AS final
 WORKDIR /app
-COPY --from=build-env /src/video-editing-api/out .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "video-editing-api.dll"]
