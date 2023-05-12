@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="videos\gallery\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

@@ -825,7 +825,7 @@ namespace video_editing_api.Service.VideoEditing
         {
             if (file == null) throw new System.Exception("File is null.");
 
-            var uploadParams = new RawUploadParams
+            var uploadParams = new RawUploadParams 
             {
                 File = new FileDescription(file.FileName, file.OpenReadStream()),
                 UseFilename = true,

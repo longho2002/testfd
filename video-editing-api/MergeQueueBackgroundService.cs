@@ -12,7 +12,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
@@ -20,7 +19,6 @@ using video_editing_api.Model.Collection;
 using video_editing_api.Model.InputModel;
 using video_editing_api.Service;
 using video_editing_api.Service.DBConnection;
-using Audio = video_editing_api.Model.InputModel.Audio;
 
 namespace video_editing_api
 {
@@ -119,8 +117,12 @@ namespace video_editing_api
                 // bool flag = false;
                 string tempFilesList = "temp_files_list.txt";
                 string videoCodec = "";
-                string resolution = config["resolution"] != null ? config["resolution"].ToString() : null;
-                string bitrate = config["resolution"] != null ? config["bitrate"].ToString() : null;
+                string resolution = config["resolution"] != null && !config["resolution"].ToString().Equals("")
+                    ? config["resolution"].ToString()
+                    : "1920:1080";
+                string bitrate = config["bitrate"] != null && !config["bitrate"].ToString().Equals("")
+                    ? config["bitrate"].ToString()
+                    : "1000";
                 string audioCodec = "";
                 int videoBitrate = 0;
                 int audioBitrate = 0;
@@ -145,15 +147,18 @@ namespace video_editing_api
                             if (!File.Exists(eventOutputFileName))
                             {
                                 await AddLogoToVideoAsync(config, eventFileName, eventOutputFileName, logoX,
-                                    logoY,(JObject) eventObj, audio);
-                                file.WriteLine($"file '{eventOutputFileName}'");
+                                    logoY, (JObject) eventObj, audio);
                             }
+                            file.WriteLine($"file '{eventOutputFileName}'");
                         }
                         else
                         {
                             string eventOutputFileName =
                                 Path.GetFileNameWithoutExtension(eventFileName) + "_with_no_logo.mp4";
-                            await handleNoLogo((JObject) eventObj, eventFileName, eventOutputFileName, audio, bitrate);
+                            if (!File.Exists(eventOutputFileName))
+                            {
+                                await handleNoLogo((JObject) eventObj, eventFileName, eventOutputFileName, audio, bitrate);
+                            }
                             file.WriteLine($"file '{eventOutputFileName}'");
                         }
                     }
@@ -212,7 +217,8 @@ namespace video_editing_api
             Directory.Delete(path, true);
         }
 
-        private async Task handleNoLogo(JObject eventObj, string eventFileName, string eventOutputFileName, Audio audio, string bitrate)
+        private async Task handleNoLogo(JObject eventObj, string eventFileName, string eventOutputFileName, Audio audio,
+            string bitrate)
         {
             string timeLine = "";
             if (eventObj["ts"] != null && eventObj["ts"].ToArray().Length > 0)
@@ -222,6 +228,7 @@ namespace video_editing_api
                 TimeSpan duration = endTime - startTime;
                 timeLine = $"-ss {startTime} -t {duration} ";
             }
+
             string arguments;
             if (audio == null)
                 arguments =
@@ -242,7 +249,10 @@ namespace video_editing_api
             }
 
             string arguments;
-            string targetBitrate = $"{config["bitrate"].ToString()}k";
+            string bitrate = config["bitrate"] != null && !config["bitrate"].ToString().Equals("")
+                ? config["bitrate"].ToString()
+                : "1000";
+            string targetBitrate = $"{bitrate}k";
 
             string timeLine = "";
             if (eventObj["ts"] != null && eventObj["ts"].ToArray().Length > 0)
@@ -252,6 +262,7 @@ namespace video_editing_api
                 TimeSpan duration = endTime - startTime;
                 timeLine = $"-ss {startTime} -t {duration} ";
             }
+
             if (config["logo"].First != null)
             {
                 string overlayFilters = "[0:v]scale=1920:1080,format=yuv420p[bg];";

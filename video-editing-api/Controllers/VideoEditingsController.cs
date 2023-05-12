@@ -397,7 +397,7 @@ namespace video_editing_api.Controllers
 
         [HttpGet("share/authorize")]
         [AllowAnonymous]
-        public async Task<IActionResult> ShareAuthor(string code, string state)
+        public async Task<IActionResult> ShareAuthor(string state,string code)
         {
             try
             {

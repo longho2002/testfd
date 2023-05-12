@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using CloudinaryDotNet.Actions;
 
 namespace video_editing_api.Model.InputModel
 {

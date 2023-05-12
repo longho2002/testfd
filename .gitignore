@@ -42,12 +42,12 @@ Generated\ Files/
 # NUNIT
 *.VisualState.xml
 TestResult.xml
-
+/video-editing-api/videos/
 # Build Results of an ATL Project
 [Dd]ebugPS/
 [Rr]eleasePS/
 dlldata.c
-
+./videos
 # Benchmark Results
 BenchmarkDotNet.Artifacts/
 
