@@ -37,3 +37,4 @@ jobs:
           heroku_app_name: "video-editing-core"
           heroku_email: "20110517@student.hcmute.edu.vn"
           usedocker: true
+          dockerfile: "./Dockerfile"
