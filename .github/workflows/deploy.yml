@@ -1,39 +1,40 @@
-name: Deploy video-editing-api to Heroku
+name: .NET CD
 
 on:
   push:
     branches:
-      - dev
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
+      - uses: actions/checkout@v2
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 5.0.x
-
       - name: Restore dependencies
         run: dotnet restore
-
       - name: Build
-        run: dotnet build --configuration Release --no-restore
-
+        run: dotnet build --no-restore
       - name: Test
         run: dotnet test --no-build --verbosity normal
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    if: success() && github.ref == 'refs/heads/main'
 
-      - name: Publish
-        run: dotnet publish --configuration Release --no-build --output ./video-editing-api/build
-
-      - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "video-editing"
+          heroku_app_name: "video-editing-core"
           heroku_email: "20110517@student.hcmute.edu.vn"
-          appdir: "./video-editing-api" # The path to your app
+          usedocker: true
+          dockerfile: "./Dockerfile"
