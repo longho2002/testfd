@@ -4,7 +4,7 @@ WORKDIR /app
 # Copy csproj and restore as distinct layers
 COPY ./video-editing-api/*.csproj ./
 RUN dotnet restore
-
+RUN mkdir -p /app/videos
 # Copy everything else and build
 COPY . ./
 RUN dotnet publish -c Release -o out
