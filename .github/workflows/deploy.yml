@@ -3,7 +3,7 @@ name: Deploy video-editing-api to Heroku
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   build:
