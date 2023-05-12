@@ -21,7 +21,7 @@ namespace video_editing_api
                 .ConfigureWebHostDefaults(webBuilder => {  var port = Environment.GetEnvironmentVariable("PORT") ?? "44394";
 
                     webBuilder.UseStartup<Startup>()
-                        .UseUrls("http://0.0.0.0:" + port);
+                        .UseUrls("https://*:" + port);
                     
                 });
     }
