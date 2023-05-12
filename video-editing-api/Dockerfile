@@ -1,16 +1,13 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+# Define the build stage
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["video-editing-api/video-editing-api.csproj", "video-editing-api/"]
+COPY ./video-editing-api/*.csproj ./video-editing-api/
 RUN dotnet restore "video-editing-api/video-editing-api.csproj"
 COPY . .
-WORKDIR "/src/video-editing-api"
+WORKDIR "/src/."
 RUN dotnet build "video-editing-api.csproj" -c Release -o /app/build
 
 FROM build AS publish
